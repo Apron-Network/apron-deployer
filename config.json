@@ -1,0 +1,5 @@
+{
+    "ws_endpoint" : "ws://47.245.33.199:9944",
+    "gateway_api_endpoint" : "http://47.245.33.199:8082",
+    "gateway_proxy_endpoint" : "http://47.245.33.199:8080"
+}
