@@ -35,10 +35,10 @@ $ yarn -v
 
 ### a. `contract address` from `statsAddress` file.
 ### b. `contract ABI` from `target\services_statistics.contract`
-
+![add an existing contract](https://github.com/Apron-Network/apron-deployer/blob/master/images/add_an_existing_contract.png)
 
 ## 2. run `queryServiceByUuid` 
 ### a. `uuid` from `serviceid` file.
-
+![call a contract](https://github.com/Apron-Network/apron-deployer/blob/master/images/call_a_contract.png)
 
 
