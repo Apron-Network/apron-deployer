@@ -30,7 +30,7 @@ def create_service(service_name: str, base_url: str, schema: str):
 
 def create_key(service_name: str) -> str:
     url = f'{api_url}/service/{service_name}/keys/'
-    r = requests.post(url)
+    r = requests.post(url, json={'account_id': 'foobar'})
     assert r.status_code == 200
 
     rslt = r.json()
