@@ -18,7 +18,11 @@ class ApronHackathonDemo(object):
         self.admin_url = admin_url
         self.proxy_url = proxy_url
         self.services = set()
-        self.users = set(["5FcD6TAfQGZNwkaPTN1n1KYcNgqkTaQP9keGHQTbJRjLWjrb"])
+        self.users = set([
+            "5Epx3rbh8deH5sLUtP2kVVVUCzfwjjFT9iMDcML99RqFgw4n"
+            , "5GBr86wPJLZrgdCgKcAG8fhriWTCgr64bdQipbXRckELLddM"
+            , "5FcD6TAfQGZNwkaPTN1n1KYcNgqkTaQP9keGHQTbJRjLWjrb"
+            , "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"])
 
         self.proxy_base_set = set()
 
