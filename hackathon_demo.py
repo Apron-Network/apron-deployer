@@ -44,7 +44,7 @@ class ApronHackathonDemo(object):
             r = requests.get(f'{base_url}/anything/{time.time()}')
             self.logger.info('-' * 20)
             self.logger.info(r.json())
-            time.sleep(0.5)
+            time.sleep(5)
 
     def update_service(self) -> typing.Iterable:
         url = f'{self.admin_url}/service/'
@@ -85,4 +85,4 @@ if __name__ == '__main__':
     demo = ApronHackathonDemo(admin_url=api_url, proxy_url=proxy_url)
     while True:
         demo.run()
-        time.sleep(1)
+        time.sleep(10)

@@ -82,7 +82,7 @@ async function main() {
                 continue;
             }
 
-            console.log("submit %s usage to chain", report.service_uuid);
+            console.log("submit service uuid %s usage to chain", report.service_uuid);
 
             const nonce = await api.rpc.system.accountNextIndex(alicePair.address);
             const unsub = await statsContract.tx
