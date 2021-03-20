@@ -52,6 +52,8 @@ class ApronHackathonDemo(object):
 
         new_service_added = set()
         for service in r.json():
+            if service['schema'] not in {'http', 'https'}:
+                continue
             service_id = service['id']
             if service_id not in self.services:
                 self.services.add(service_id)
