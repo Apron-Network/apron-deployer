@@ -115,6 +115,7 @@ async function main() {
                         , gw_service.service_provider_name
                         , gw_service.service_provider_account
                         , gw_service.service_usage
+                        , gw_service.schema
                         , gw_service.service_price_plan
                         , gw_service.service_declaimer)
                     .signAndSend(alicePair, { nonce: nonce }, (result) => {
