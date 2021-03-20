@@ -44,7 +44,7 @@ async function main() {
     writeFileSync('serviceid', service_id);
 
 
-    let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    let wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const endowment = 1000000000000000n * 100n;
     const gasLimit = 100000n * 1000000n;
 
@@ -70,7 +70,7 @@ async function main() {
                 }
             });
 
-        await wait(5000);
+        await wait(10000);
 
         nonce = await api.rpc.system.accountNextIndex(alicePair.address);
         console.log("========= begin to deploy market contract");
@@ -87,83 +87,64 @@ async function main() {
                 }
             });
 
-        await wait(5000);
-
-        const service_name = 'service_test_' + service_id;
-        const service_desc = 'service desc';
-        const service_logo = 'https://www.extremetech.com/wp-content/uploads/2014/01/Bitcoin-from-Wikipedia.jpg';
-        const service_create_time = Date.now();
-        const service_provider_name = 'My Dear Alice';
-        const service_provider_account = alicePair.address;
-        const service_usage = 'here is the instruction of how to use this service.';
-        const service_price_plan = '$1 per 100000 calls';
-        const service_declaimer = 'This is the declaimer of this service! It\'s your own responsibility to use this service!';
-
-        // Add service to Gate Way.
-        console.log("========= begin to add service %s to gateway", service_id);
-        var raw = {
-            name : service_id,
-            base_url : "httpbin/",
-            schema : "http"
-        }
-        console.log(JSON.stringify(raw));
-        var requestOptions = {
-            method: 'POST',
-            body: JSON.stringify(raw),
-            redirect: 'follow'
-        };
-        fetch(gateway_endpoint+"/service/", requestOptions)
-        .then(response => response.text())
-        .then(result => console.log("result is: %s", result))
-        .catch(error => console.log('error', error));
-
-        nonce = await api.rpc.system.accountNextIndex(alicePair.address);
-        console.log("========= begin to add service to service market");
-        const mm = new ContractPromise(api, marketAbi, marketContract.address);
-        const unsub = await mm.tx
-            .addService({ value: 0, gasLimit: gasLimit }
-                , service_id
-                , service_name
-                , service_desc
-                , service_logo
-                , service_create_time
-                , service_provider_name
-                , service_provider_account
-                , service_usage
-                , service_price_plan
-                , service_declaimer)
-            .signAndSend(alicePair, { nonce: nonce }, (result) => {
-                if (result.status.isInBlock || result.status.isFinalized) {
-                    console.log("result is: ", result);
-                    unsub();
-                }
-            });
-
-        await wait(5000);
-
-        /*
-        const unsub3 = await marketContract.tx
-            .addService({ value: 0, gasLimit: gasLimit }
-                , service_id
-                , service_name
-                , service_desc
-                , service_logo
-                , service_create_time
-                , service_provider_name
-                , service_provider_account
-                , service_usage
-                , service_price_plan
-                , service_declaimer)
-            .signAndSend(alicePair, (result) => {
-                if (result.status.isInBlock || result.status.isFinalized) {
-                    console.log("result is: ", result.status);
-                    unsub3();
-                }
-            });
-            
         await wait(10000);
-        */
     }
+
+    // add service
+    // {
+    //     console.log("============= Begin to add service");
+    //     const service_name = 'service_test_' + service_id;
+    //     const service_desc = 'service desc';
+    //     const service_logo = 'https://www.extremetech.com/wp-content/uploads/2014/01/Bitcoin-from-Wikipedia.jpg';
+    //     const service_create_time = Date.now();
+    //     const service_provider_name = 'My Dear Alice';
+    //     const service_provider_account = alicePair.address;
+    //     const service_usage = 'here is the instruction of how to use this service.';
+    //     const service_price_plan = '$1 per 100000 calls';
+    //     const service_declaimer = 'This is the declaimer of this service! It\'s your own responsibility to use this service!';
+
+    //     // Add service to Gate Way.
+    //     console.log("========= begin to add service %s to gateway", service_id);
+    //     var raw = {
+    //         name : service_id,
+    //         base_url : "httpbin/",
+    //         schema : "http"
+    //     }
+    //     console.log(JSON.stringify(raw));
+    //     var requestOptions = {
+    //         method: 'POST',
+    //         body: JSON.stringify(raw),
+    //         redirect: 'follow'
+    //     };
+    //     fetch(gateway_endpoint+"/service/", requestOptions)
+    //     .then(response => response.text())
+    //     .then(result => console.log("result is: %s", result))
+    //     .catch(error => console.log('error', error));
+
+    //     nonce = await api.rpc.system.accountNextIndex(alicePair.address);
+    //     console.log("========= begin to add service to service market");
+    //     const mm = new ContractPromise(api, marketAbi, marketContract.address);
+    //     const unsub = await mm.tx
+    //         .addService({ value: 0, gasLimit: gasLimit }
+    //             , service_id
+    //             , service_name
+    //             , service_desc
+    //             , service_logo
+    //             , service_create_time
+    //             , service_provider_name
+    //             , service_provider_account
+    //             , service_usage
+    //             , service_price_plan
+    //             , service_declaimer)
+    //         .signAndSend(alicePair, { nonce: nonce }, (result) => {
+    //             if (result.status.isInBlock || result.status.isFinalized) {
+    //                 console.log("result is: ", result);
+    //                 unsub();
+    //             }
+    //         });
+
+    //     await wait(10000);
+    // }
 
 
     // deploy stats contract
@@ -209,21 +190,6 @@ async function main() {
 
         await wait(5000);
     }
-
-    // console.log("======== begin to query");
-    // {
-    //     const { gasConsumed, result, outcome } = await contract.query.name(alicePair.address, { value: 0, gasLimit: gasLimit });
-
-    //     console.log("query result", result.toHuman());
-    //     console.log("gas consumed", gasConsumed.toHuman());
-
-    //     if (result.isOk) {
-    //         console.log('Success', outcome);
-    //     } else {
-    //         console.error('Error', result.asErr);
-    //     }
-    //     await wait(1000);
-    // }
 
     console.log("The End!!!");
 }

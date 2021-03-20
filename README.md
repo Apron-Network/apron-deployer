@@ -9,13 +9,13 @@ Deployer Demo for substrate smart contracts
 ## please modify `config.json` according to your env.
 
 ## test connection with chain
-`node index.js`
+`yarn run connect`
 
 ## deploy contract and add service in contract and gateway.
-`node deploy.js`
+`yarn run deploy`
 
 ## simulate user behavior. 
 `python3 test_demo.py`
 
 ## submit user usage to the chain. 
-`node submit.js`
+`yarn run submit`

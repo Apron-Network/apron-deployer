@@ -40,6 +40,7 @@ async function main() {
 
 
     let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
     const endowment = 1230000000000n;
     const gasLimit = 100000n * 10000000n;
 
@@ -47,14 +48,12 @@ async function main() {
     const content = readFileSync(stats).toString();
     const statsAbi = JSON.parse(content);
     const statsAddress = readFileSync('./statsAddress').toString();
-    const serviceId = readFileSync('./serviceid').toString();
-    const userKey = uuidv4(); 
+    // const serviceId = readFileSync('./serviceid').toString();
+    // const userKey = uuidv4(); 
 
     console.log("========= begin to submit usage report");
     const statsContract = new ContractPromise(api, statsAbi, statsAddress);
-    let starttime = Date.now();
-    let endtime = Date.now();
-
+    
     // submit usage
     while (true) {
         endtime = Date.now();
@@ -103,9 +102,7 @@ async function main() {
             });
         }
         
-        await wait(5000);
-
-        starttime = Date.now();
+        await wait(30000); // 30s
     }
 
     console.log("The End!!!");
