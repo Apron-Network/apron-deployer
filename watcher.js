@@ -99,7 +99,7 @@ async function main() {
                 // gw_service.service_provider_name = 'alice';
                 // gw_service.service_provider_account = alicePair.address;
                 // gw_service.service_usage = 'Products on demand use, according to the amount of pay, stable and reliable';
-                // gw_service.service_price_plan = '[{"name":"Heco RPC service","desc":"Heco RPC service, pay-per-use","type":"post-paid/prepay","price":"0.001 unit"}]';
+                // gw_service.service_price_plan = '[{"name":"Heco RPC service","description":"Heco RPC service, pay-per-use","type":"post-paid/prepay","price":"0.001 unit"}]';
                 // gw_service.service_declaimer = 'Service availability of 99.999%, if there is no availability clear as soon as possible to switch to other services.';
 
                 const nonce = await api.rpc.system.accountNextIndex(alicePair.address);
