@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xf2628f90a2ae77abc96f292fea7dfb987dfe1030089551f0656f833ccea778b4",
+    "hash": "0xe36056f8b8179d4100090901f0a1b092ad0517e7b3474b30d96cdd410677674d",
     "language": "ink! 3.0.0-rc1",
     "compiler": "rustc 1.52.0-nightly"
   },
@@ -194,14 +194,14 @@
           "displayName": [
             "bool"
           ],
-          "type": 14
+          "type": 17
         },
         "selector": "0x30aeef1b"
       },
       {
         "args": [
           {
-            "name": "id",
+            "name": "index",
             "type": {
               "displayName": [
                 "u64"
@@ -211,11 +211,11 @@
           }
         ],
         "docs": [
-          " query service by id"
+          " query service by index"
         ],
         "mutates": false,
         "name": [
-          "query_service_by_id"
+          "query_service_by_index"
         ],
         "payable": false,
         "returnType": {
@@ -224,7 +224,7 @@
           ],
           "type": 10
         },
-        "selector": "0x7d5f1b37"
+        "selector": "0x1424180a"
       },
       {
         "args": [
@@ -268,9 +268,37 @@
           "displayName": [
             "Vec"
           ],
-          "type": 15
+          "type": 18
         },
         "selector": "0xa9f18e7a"
+      },
+      {
+        "args": [
+          {
+            "name": "provider",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [
+          " query services"
+        ],
+        "mutates": false,
+        "name": [
+          "list_services_provider"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Vec"
+          ],
+          "type": 18
+        },
+        "selector": "0x18612d4c"
       }
     ]
   },
@@ -454,6 +482,86 @@
             }
           },
           "name": "services_map_by_uuid"
+        },
+        {
+          "layout": {
+            "struct": {
+              "fields": [
+                {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0600000002000000000000000000000000000000000000000000000000000000",
+                              "ty": 5
+                            }
+                          },
+                          "name": "header"
+                        },
+                        {
+                          "layout": {
+                            "struct": {
+                              "fields": [
+                                {
+                                  "layout": {
+                                    "cell": {
+                                      "key": "0x0700000002000000000000000000000000000000000000000000000000000000",
+                                      "ty": 6
+                                    }
+                                  },
+                                  "name": "len"
+                                },
+                                {
+                                  "layout": {
+                                    "array": {
+                                      "cellsPerElem": 1,
+                                      "layout": {
+                                        "cell": {
+                                          "key": "0x0700000003000000000000000000000000000000000000000000000000000000",
+                                          "ty": 14
+                                        }
+                                      },
+                                      "len": 4294967295,
+                                      "offset": "0x0800000002000000000000000000000000000000000000000000000000000000"
+                                    }
+                                  },
+                                  "name": "elems"
+                                }
+                              ]
+                            }
+                          },
+                          "name": "entries"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "keys"
+                },
+                {
+                  "layout": {
+                    "hash": {
+                      "layout": {
+                        "cell": {
+                          "key": "0x0800000003000000000000000000000000000000000000000000000000000000",
+                          "ty": 15
+                        }
+                      },
+                      "offset": "0x0700000003000000000000000000000000000000000000000000000000000000",
+                      "strategy": {
+                        "hasher": "Blake2x256",
+                        "postfix": "",
+                        "prefix": "0x696e6b20686173686d6170"
+                      }
+                    }
+                  },
+                  "name": "values"
+                }
+              ]
+            }
+          },
+          "name": "services_map_by_provider"
         }
       ]
     }
@@ -609,7 +717,7 @@
         "composite": {
           "fields": [
             {
-              "name": "id",
+              "name": "index",
               "type": 4
             },
             {
@@ -723,6 +831,71 @@
         "hashmap",
         "ValueEntry"
       ]
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 8
+                }
+              ],
+              "name": "Vacant"
+            },
+            {
+              "fields": [
+                {
+                  "type": 1
+                }
+              ],
+              "name": "Occupied"
+            }
+          ]
+        }
+      },
+      "params": [
+        1
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "Entry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "value",
+              "type": 16
+            },
+            {
+              "name": "key_index",
+              "type": 6
+            }
+          ]
+        }
+      },
+      "params": [
+        16
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "hashmap",
+        "ValueEntry"
+      ]
+    },
+    {
+      "def": {
+        "sequence": {
+          "type": 4
+        }
+      }
     },
     {
       "def": {
