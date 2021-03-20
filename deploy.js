@@ -45,7 +45,7 @@ async function main() {
 
 
     let wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-    const endowment = 1000000000000000n * 100n;
+    const endowment = 1000000000000000n * 100000n;
     const gasLimit = 100000n * 1000000n;
 
     let marketBluePrint, statsBluePrint;
