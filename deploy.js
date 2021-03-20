@@ -102,9 +102,18 @@ async function main() {
         // Add service to Gate Way.
         console.log("========= begin to add service %s to gateway", service_id);
         var raw = {
-            name : service_id,
+            id : service_id,
+            name : service_name,
             base_url : "httpbin/",
-            schema : "http"
+            schema : "http",
+            desc: 'service desc',
+            logo: service_logo,
+            create_time: service_create_time,
+            service_provider_name: service_provider_name ,
+            service_provider_account: service_provider_account,
+            service_usage: service_usage,
+            service_price_plan: service_price_plan,
+            service_declaimer: service_declaimer,
         }
         console.log(JSON.stringify(raw));
         var requestOptions = {

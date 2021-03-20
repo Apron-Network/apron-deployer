@@ -25,6 +25,14 @@ def create_service(service_id, service_name: str, base_url: str, schema: str):
         'name': service_name,
         'base_url': base_url,
         'schema': schema,
+        'desc': 'service desc',
+        'logo': 'https://via.placeholder.com/150?text=Apron',
+        'create_time': int(time.time()),
+        'service_provider_name': 'sp',
+        'service_provider_account': 'sp_account',
+        'service_usage': 'usage',
+        'service_price_plan': 'price',
+        'service_declaimer': 'declaimer',
     }
     r = requests.post(url, json=payload)
     assert r.status_code == 201
@@ -36,7 +44,7 @@ def create_key(service_id: str) -> str:
     assert r.status_code == 200
 
     rslt = r.json()
-    assert rslt['serviceId'] == service_id
+    # assert rslt['serviceId'] == service_id
     return rslt['key']
 
 
@@ -60,8 +68,8 @@ if __name__ == '__main__':
 
     service_name = ""
     with open("./serviceid",'r') as f:
-        service_name = f.readline()
-    print(service_name)
+        service_id = f.readline()
+    print(service_id)
     base_url = 'httpbin/'
     schema = 'http'
     # create_service(service_id, service_name, base_url, schema)
