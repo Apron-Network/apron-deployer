@@ -53,10 +53,10 @@ async function main() {
 
     console.log("========= begin to submit usage report");
     const statsContract = new ContractPromise(api, statsAbi, statsAddress);
-    
+
     // submit usage
     while (true) {
-        endtime = Date.now();
+        // endtime = Date.now();
 
         // get data from gateway. 
         var requestOptions = {

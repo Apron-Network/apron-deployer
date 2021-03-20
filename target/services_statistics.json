@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xcbcda2fc6cd4126af81529641da31d4990ae565b74081e10513d4abc5eb70c45",
+    "hash": "0x1d32f6ea5e44ab266869df22bd60c945122eda9405e67ebe0551db5fe55e0db9",
     "language": "ink! 3.0.0-rc1",
     "compiler": "rustc 1.52.0-nightly"
   },
@@ -190,6 +190,22 @@
           "type": 16
         },
         "selector": "0x6973ebbc"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "list_all_statistics"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Vec"
+          ],
+          "type": 17
+        },
+        "selector": "0x0ec3d2fb"
       },
       {
         "args": [

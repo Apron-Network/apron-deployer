@@ -171,7 +171,7 @@ async function main() {
         nonce = await api.rpc.system.accountNextIndex(alicePair.address);
         console.log("========= begin to deploy stats contract");
         const unsub2 = await statsBluePrint.tx
-            .new(endowment, gasLimit, alicePair.address, marketContract.address)
+            .new(endowment, gasLimit, alicePair.address, marketContract.address.toString())
             .signAndSend(alicePair, { nonce: nonce }, (result) => {
                 if (result.status.isInBlock || result.status.isFinalized) {
 
