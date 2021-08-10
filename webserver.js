@@ -15,6 +15,7 @@ const market = './target/services_market.contract';
 const stats = './target/services_statistics.contract';
 
 const config = JSON.parse(readFileSync('./config.json').toString())
+const listen_port = config.listen_port;
 const ws_endpoint = config.ws_endpoint;
 const gateway_endpoint = config.gateway_api_endpoint;
 const stats_contract_address = config.stats_contract_address;
@@ -25,7 +26,6 @@ console.log(gateway_endpoint);
 new Worker('./submit.js');
 const app = express()
 app.use(express.json())
-const port = 4000
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
@@ -39,8 +39,8 @@ app.post('/service', (req, res) => {
     })
 })
 
-app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+app.listen(listen_port, () => {
+    console.log(`Example app listening at http://localhost:${listen_port}`)
 })
 
 
