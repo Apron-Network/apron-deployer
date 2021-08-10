@@ -40,3 +40,29 @@ $ yarn -v
 ## 2. run `queryServiceByUuid` 
 ### a. `uuid` from `serviceid` file.
 ![call a contract](https://github.com/Apron-Network/apron-deployer/blob/master/images/call_a_contract.png)
+
+# run webserver
+```bash
+yarn run webserver
+```
+
+## register gateway service
+```bash
+curl --location --request POST 'http://localhost:4000/service' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id" : "m1-alice_apron_network:8080",
+    "domain_name": "m1-alice_apron_network",
+    "providers": [
+        {
+            "id" : "test_provider1",
+            "name": "test_provider1 http provider1",
+            "desc": "test http provider1 desc",
+            "base_url": "http://httpbin/anything",
+            "schema": "http",
+            "service_price_plan": "[{\"name\":\"Free\",\"type\":\"post-paid\",\"price\":0,\"unit\":\"APN\",\"desc\":\"to be continue\"}]"
+        }
+
+    ]
+}'
+```
