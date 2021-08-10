@@ -75,44 +75,43 @@ export async function registerServices(data) {
 
     const marketAbi = JSON.parse(readFileSync(market).toString());
     const marketContract = new ContractPromise(api, marketAbi, market_contract_address);
-    for (let i = 0; i < data.providers.length; ++i) {
-        let v = data.providers[i]
-        console.log("========= begin to add service to service market");
-        let nonce = await api.rpc.system.accountNextIndex(alicePair.address);
-        const unsubCall1 = await marketContract.tx
-            .addService({ value: 0, gasLimit: gasLimit },
-                v.id,
-                v.name,
-                v.desc,
-                v.logo,
-                v.create_time,
-                v.service_provider_name,
-                v.service_provider_account,
-                v.service_usage,
-                v.schema,
-                v.service_price_plan,
-                v.service_declaimer)
-            .signAndSend(alicePair, { nonce: nonce }, (result) => {
-                if (result.status.isInBlock || result.status.isFinalized) {
-                    if (!!result.dispatchError) {
-                        console.log('add service failed for ', report.service_uuid, report.user_key);
-                        console.log('isBadOrigin is ', result.dispatchError.isBadOrigin);
-                        console.log('isOther is ', result.dispatchError.isOther);
-                        console.log('isModule is ', result.dispatchError.isModule);
-                    } else {
-                        console.log('add service success for ', v.id);
-                    }
-                    unsubCall1();
-                }
-            });
 
-        console.log("========= begin to register to gateway");
-        let response = await axios({
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            url: gateway_endpoint + "/service",
-            data: data
-        })
-        console.log("register result", response.status)
-    }
+    let v = data.providers[0]
+    console.log("========= begin to add service to service market");
+    let nonce = await api.rpc.system.accountNextIndex(alicePair.address);
+    const unsubCall1 = await marketContract.tx
+        .addService({ value: 0, gasLimit: gasLimit },
+            data.id,
+            v.name,
+            v.desc,
+            v.logo,
+            v.create_time,
+            v.service_provider_name,
+            v.service_provider_account,
+            v.service_usage,
+            v.schema,
+            v.service_price_plan,
+            v.service_declaimer)
+        .signAndSend(alicePair, { nonce: nonce }, (result) => {
+            if (result.status.isInBlock || result.status.isFinalized) {
+                if (!!result.dispatchError) {
+                    console.log('add service failed for ', report.service_uuid, report.user_key);
+                    console.log('isBadOrigin is ', result.dispatchError.isBadOrigin);
+                    console.log('isOther is ', result.dispatchError.isOther);
+                    console.log('isModule is ', result.dispatchError.isModule);
+                } else {
+                    console.log('add service success for ', v.id);
+                }
+                unsubCall1();
+            }
+        });
+
+    console.log("========= begin to register to gateway");
+    let response = await axios({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        url: gateway_endpoint + "/service",
+        data: data
+    })
+    console.log("register result", response.status)
 }
