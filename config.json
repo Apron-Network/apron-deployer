@@ -1,5 +1,7 @@
 {
-    "ws_endpoint" : "ws://127.0.0.1:9944",
-    "gateway_api_endpoint" : "http://127.0.0.1:8082",
-    "gateway_proxy_endpoint" : "http://127.0.0.1:8080"
+    "ws_endpoint" : "ws://47.242.250.114:9944",
+    "gateway_api_endpoint" : "http://47.242.250.114:8082",
+    "gateway_proxy_endpoint" : "http://47.242.250.114:8080",
+    "market_contract_address": "5DcR98pHokK1dAkfogC4buwrintRnrAje7HKsUz4TXNds7mz",
+    "stats_contract_address": "5Gx5JityZaUB1ybsCxLRSV3zLrWXaHX7VyDY1j8tZm6iG9AS"
 }

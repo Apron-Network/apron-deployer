@@ -1,4 +1,4 @@
-// Required imports
+import express from 'express';
 import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
 import { CodePromise, ContractPromise } from '@polkadot/api-contract';
 import { readFileSync, writeFileSync } from 'fs';
@@ -7,6 +7,9 @@ import { time } from 'console';
 import { v4 as uuidv4 } from 'uuid';
 import { start } from 'repl';
 import fetch from 'node-fetch';
+import axios from "axios";
+import * as path from "path";
+import { Worker } from "worker_threads";
 
 const market = './target/services_market.contract';
 const stats = './target/services_statistics.contract';
@@ -19,11 +22,31 @@ const market_contract_address = config.market_contract_address;
 
 console.log(ws_endpoint);
 console.log(gateway_endpoint);
+new Worker('./submit.js');
+const app = express()
+app.use(express.json())
+const port = 4000
 
-async function main() {
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
+
+app.post('/service', (req, res) => {
+    console.log("/service", req.body)
+    registerServices(req.body).then(r => {
+        console.log("registerServices done", r)
+        res.send("success")
+    })
+})
+
+app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
+})
+
+
+export async function registerServices(data) {
 
     await cryptoWaitReady(); // wait for crypto initializing
-
     const keyring = new Keyring({ type: 'sr25519' });
     let alicePair = keyring.createFromUri('//Alice');
     let bobPair = keyring.createFromUri('//Bob');
@@ -50,65 +73,46 @@ async function main() {
     const endowment = 1230000000000n;
     const gasLimit = 100000n * 10000000n;
 
-    const content = readFileSync(stats).toString();
-    const statsAbi = JSON.parse(content);
-
-    console.log("========= begin to submit usage report");
-    const statsContract = new ContractPromise(api, statsAbi, stats_contract_address);
-
-    // submit usage
-    while (true) {
-        // endtime = Date.now();
-
-        // get data from gateway.
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-          };
-        let url = gateway_endpoint + '/service/report/';
-        let response = await fetch(url, requestOptions);
-        let reports = await response.json();
-        console.log("get data from gate way");
-        console.log(reports);
-
-        for (var index in reports) {
-
-            let report = reports[index];
-
-            // console.log(report)
-            // console.log("submit %s usage to chain", report.service_uuid);
-
-            // remove service name empty.
-            if( report.service_uuid === "" ){
-                // console.log("continue");
-                continue;
-            }
-
-            console.log("submit service uuid %s usage to chain", report.service_uuid);
-
-            const nonce = await api.rpc.system.accountNextIndex(alicePair.address);
-            const unsub = await statsContract.tx
-            .submitUsage({ value: 0, gasLimit: -1 }, report.service_uuid, report.user_key, report.start_time, report.end_time, report.usage, report.price_plan, report.cost)
-            .signAndSend(alicePair, {nonce: nonce}, (result) => {
+    const marketAbi = JSON.parse(readFileSync(market).toString());
+    const marketContract = new ContractPromise(api, marketAbi, market_contract_address);
+    for (let i = 0; i < data.providers.length; ++i) {
+        let v = data.providers[i]
+        console.log("========= begin to add service to service market");
+        let nonce = await api.rpc.system.accountNextIndex(alicePair.address);
+        const unsubCall1 = await marketContract.tx
+            .addService({ value: 0, gasLimit: gasLimit },
+                v.id,
+                v.name,
+                v.desc,
+                v.logo,
+                v.create_time,
+                v.service_provider_name,
+                v.service_provider_account,
+                v.service_usage,
+                v.schema,
+                v.service_price_plan,
+                v.service_declaimer)
+            .signAndSend(alicePair, { nonce: nonce }, (result) => {
                 if (result.status.isInBlock || result.status.isFinalized) {
-                    // console.log("contract", contract);
                     if (!!result.dispatchError) {
-                        console.log('submit usage failed for ', report.service_uuid, report.user_key);
+                        console.log('add service failed for ', report.service_uuid, report.user_key);
                         console.log('isBadOrigin is ', result.dispatchError.isBadOrigin);
                         console.log('isOther is ', result.dispatchError.isOther);
                         console.log('isModule is ', result.dispatchError.isModule);
                     } else {
-                        console.log('submit usage success for ', report.service_uuid, report.user_key);
+                        console.log('add service success for ', v.id);
                     }
-                    unsub();
+                    unsubCall1();
                 }
             });
-            await wait(2000); // 2s
-        }
-        await wait(30000); // 30s
+
+        console.log("========= begin to register to gateway");
+        let response = await axios({
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            url: gateway_endpoint + "/service",
+            data: data
+        })
+        console.log("register result", response.status)
     }
-
-    console.log("The End!!!");
 }
-
-main().catch(console.error).finally(() => process.exit());
