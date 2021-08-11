@@ -10,19 +10,28 @@ import fetch from 'node-fetch';
 import axios from "axios";
 import * as path from "path";
 import { Worker } from "worker_threads";
+import { Command } from 'commander';
+
+const program = new Command();
+program
+    .option('-c, --config <type>', 'set config path', './config.json');
+program.parse();
+
+const configPath = program.opts().config;
+console.log("load config from",  configPath);
+const config = JSON.parse(readFileSync(configPath).toString())
+const contracts = JSON.parse(readFileSync('./contracts.json').toString())
+const listen_port = config.listen_port;
+const ws_endpoint = config.ws_endpoint;
+const gateway_endpoint = config.gateway_api_endpoint;
+const stats_contract_address = contracts.stats_contract_address;
+const market_contract_address = contracts.market_contract_address;
 
 const market = './target/services_market.contract';
 const stats = './target/services_statistics.contract';
 
-const config = JSON.parse(readFileSync('./config.json').toString())
-const listen_port = config.listen_port;
-const ws_endpoint = config.ws_endpoint;
-const gateway_endpoint = config.gateway_api_endpoint;
-const stats_contract_address = config.stats_contract_address;
-const market_contract_address = config.market_contract_address;
-
-console.log(ws_endpoint);
-console.log(gateway_endpoint);
+console.log("contract ws:", ws_endpoint);
+console.log("gateway addr:", gateway_endpoint);
 new Worker('./submit.js');
 const app = express()
 app.use(express.json())

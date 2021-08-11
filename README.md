@@ -15,7 +15,15 @@ $ yarn -v
 1. Run `yarn` to install all dependencies.
 
 # Run
-## please modify `config.json` according to your env.
+please modify `config.json` according to your env.
+```json
+{
+    "listen_port": 4000,
+    "ws_endpoint" : "ws://47.242.250.114:9944",
+    "gateway_api_endpoint" : "http://m1-alice.apron.network:8082",
+    "gateway_proxy_endpoint" : "http://47.242.250.114:8080",
+}
+```
 
 ## test connection with chain
 `yarn run connect`
@@ -31,14 +39,13 @@ $ yarn -v
 
 # Check result from chain
 
-## 1. open `Developer->Contracts->Add an existing contract`
-
-### a. `contract address` from `statsAddress` file.
-### b. `contract ABI` from `target\services_statistics.contract`
+1. open `Developer->Contracts->Add an existing contract`
+    1. `contract address` from `statsAddress` file.
+    2. `contract ABI` from `target\services_statistics.contract`
 ![add an existing contract](https://github.com/Apron-Network/apron-deployer/blob/master/images/add_an_existing_contract.png)
-
-## 2. run `queryServiceByUuid` 
-### a. `uuid` from `serviceid` file.
+/sc 
+2. run `queryServiceByUuid` 
+    1. `uuid` from `serviceid` file.
 ![call a contract](https://github.com/Apron-Network/apron-deployer/blob/master/images/call_a_contract.png)
 
 # run webserver
@@ -61,6 +68,32 @@ curl --location --request POST 'http://localhost:4000/service' \
             "base_url": "http://httpbin/anything",
             "schema": "http",
             "service_price_plan": "[{\"name\":\"Free\",\"type\":\"post-paid\",\"price\":0,\"unit\":\"APN\",\"desc\":\"to be continue\"}]"
+        }
+
+    ]
+}'
+```
+
+# run another webserver
+```bash
+yarn run webserver --config ./config2.js
+```
+
+## register gateway service
+```bash
+curl --location --request POST 'http://localhost:4001/service' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id" : "m1-bob_apron_network:8080",
+    "domain_name": "m1-alice_apron_network",
+    "providers": [
+        {
+            "id" : "test_provider2",
+            "name": "test_provider2 http provider2",
+            "desc": "test http provider2 desc",
+            "base_url": "http://httpbin/anything",
+            "schema": "http",
+            "service_price_plan": "[{\"name\":\"Tier1\",\"type\":\"post-paid\",\"price\":0.1,\"unit\":\"APN\",\"desc\":\"to be continue\"}]"
         }
 
     ]

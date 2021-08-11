@@ -11,6 +11,7 @@ import fetch from 'node-fetch';
 const market = './target/services_market.contract';
 const stats = './target/services_statistics.contract';
 
+const contractsPath = "./contracts.json";
 const config = JSON.parse(readFileSync('./config.json').toString());
 const ws_endpoint = config.ws_endpoint;
 const gateway_endpoint = config.gateway_api_endpoint;
@@ -24,10 +25,15 @@ async function main() {
 
     const keyring = new Keyring({ type: 'sr25519' });
     let alicePair = keyring.createFromUri('//Alice');
-    let bobPair = keyring.createFromUri('//Bob');
 
     const provider = new WsProvider(ws_endpoint);
-    const api = await ApiPromise.create({ provider: provider, types: { "Address": "AccountId", "LookupSource": "AccountId" } });
+    const api = await ApiPromise.create({
+        provider: provider,
+        types: {
+            "Address": "MultiAddress",
+            "LookupSource": "MultiAddress"
+        }
+    });
 
     // Retrieve the chain & node information information via rpc calls
     const [chain, nodeName, nodeVersion] = await Promise.all([
@@ -51,6 +57,11 @@ async function main() {
     let marketBluePrint, statsBluePrint;
     let marketContract, statsContract;
 
+    let contracts = {
+        market_contract_address: "",
+        stats_contract_address: ""
+    }
+
     // deploy market contract
     {
         const content = readFileSync(market).toString();
@@ -59,93 +70,20 @@ async function main() {
         let nonce = await api.rpc.system.accountNextIndex(alicePair.address);
         console.log("======= begin to upload market contrace code");
         const code = new CodePromise(api, marketAbi, marketAbi.wasm);
-        const unsub1 = await code
-            .createBlueprint().signAndSend(alicePair, { nonce: nonce }, (result) => {
-                if (result.status.isInBlock || result.status.isFinalized) {
-                    marketBluePrint = result.blueprint;
-                    console.log('~~~inblock', result.toHuman());
-                    unsub1();
-                } else {
-                    console.log('result~~~', result.toHuman());
-                }
-            });
-
-        await wait(10000);
-
-        nonce = await api.rpc.system.accountNextIndex(alicePair.address);
-        console.log("========= begin to deploy market contract");
-        const unsub2 = await marketBluePrint.tx
+        const unsub1 = await code.tx
             .new(endowment, gasLimit, alicePair.address)
             .signAndSend(alicePair, { nonce: nonce }, (result) => {
                 if (result.status.isInBlock || result.status.isFinalized) {
                     // here we have an additional field in the result, containing the contract
                     marketContract = result.contract;
-                    console.log("market contract : ", result);
                     console.log("market contract address is : ", marketContract.address.toString());
-                    writeFileSync('./marketAddress', marketContract.address.toString());
-                    unsub2();
+                    contracts.market_contract_address = marketContract.address.toString();
+                    unsub1();
                 }
             });
 
         await wait(10000);
     }
-
-    // add service
-    // {
-    //     console.log("============= Begin to add service");
-    //     const service_name = 'service_test_' + service_id;
-    //     const service_desc = 'service desc';
-    //     const service_logo = 'https://www.extremetech.com/wp-content/uploads/2014/01/Bitcoin-from-Wikipedia.jpg';
-    //     const service_create_time = Date.now();
-    //     const service_provider_name = 'My Dear Alice';
-    //     const service_provider_account = alicePair.address;
-    //     const service_usage = 'here is the instruction of how to use this service.';
-    //     const service_price_plan = '$1 per 100000 calls';
-    //     const service_declaimer = 'This is the declaimer of this service! It\'s your own responsibility to use this service!';
-
-    //     // Add service to Gate Way.
-    //     console.log("========= begin to add service %s to gateway", service_id);
-    //     var raw = {
-    //         name : service_id,
-    //         base_url : "httpbin/",
-    //         schema : "http"
-    //     }
-    //     console.log(JSON.stringify(raw));
-    //     var requestOptions = {
-    //         method: 'POST',
-    //         body: JSON.stringify(raw),
-    //         redirect: 'follow'
-    //     };
-    //     fetch(gateway_endpoint+"/service/", requestOptions)
-    //     .then(response => response.text())
-    //     .then(result => console.log("result is: %s", result))
-    //     .catch(error => console.log('error', error));
-
-    //     nonce = await api.rpc.system.accountNextIndex(alicePair.address);
-    //     console.log("========= begin to add service to service market");
-    //     const mm = new ContractPromise(api, marketAbi, marketContract.address);
-    //     const unsub = await mm.tx
-    //         .addService({ value: 0, gasLimit: gasLimit }
-    //             , service_id
-    //             , service_name
-    //             , service_desc
-    //             , service_logo
-    //             , service_create_time
-    //             , service_provider_name
-    //             , service_provider_account
-    //             , service_usage
-    //             , service_price_plan
-    //             , service_declaimer)
-    //         .signAndSend(alicePair, { nonce: nonce }, (result) => {
-    //             if (result.status.isInBlock || result.status.isFinalized) {
-    //                 console.log("result is: ", result);
-    //                 unsub();
-    //             }
-    //         });
-
-    //     await wait(10000);
-    // }
-
 
     // deploy stats contract
     {
@@ -155,22 +93,7 @@ async function main() {
         let nonce = await api.rpc.system.accountNextIndex(alicePair.address);
         console.log("======= begin to upload stats contract code");
         const code = new CodePromise(api, statsAbi, statsAbi.wasm);
-        const unsub = await code
-            .createBlueprint().signAndSend(alicePair, { nonce: nonce }, (result) => {
-                if (result.status.isInBlock || result.status.isFinalized) {
-                    statsBluePrint = result.blueprint;
-                    console.log('~~~inblock', result.toHuman());
-                    unsub();
-                } else {
-                    console.log('result~~~', result.toHuman());
-                }
-            });
-
-        await wait(10000);
-
-        nonce = await api.rpc.system.accountNextIndex(alicePair.address);
-        console.log("========= begin to deploy stats contract");
-        const unsub2 = await statsBluePrint.tx
+        const unsub2 = await code.tx
             .new(endowment, gasLimit, alicePair.address, marketContract.address.toString())
             .signAndSend(alicePair, { nonce: nonce }, (result) => {
                 if (result.status.isInBlock || result.status.isFinalized) {
@@ -183,13 +106,14 @@ async function main() {
 
                     statsContract = result.contract;
                     console.log("stats contract address is: ", statsContract.address.toString());
-                    writeFileSync('./statsAddress', statsContract.address.toString());
+                    contracts.stats_contract_address = statsContract.address.toString();
                     unsub2();
                 }
             });
 
-        await wait(5000);
+        await wait(10000);
     }
+    writeFileSync(contractsPath, JSON.stringify(contracts));
 
     console.log("The End!!!");
 }

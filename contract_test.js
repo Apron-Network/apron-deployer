@@ -12,9 +12,10 @@ const market = './target/services_market.contract';
 const stats = './target/services_statistics.contract';
 
 const config = JSON.parse(readFileSync('./config.json').toString())
+const contracts = JSON.parse(readFileSync('./contracts.json').toString())
 const ws_endpoint = config.ws_endpoint;
-const stats_contract_address = config.stats_contract_address;
-const market_contract_address = config.market_contract_address;
+const stats_contract_address = contracts.stats_contract_address;
+const market_contract_address = contracts.market_contract_address;
 
 console.log("contract ws: ", ws_endpoint);
 async function main() {

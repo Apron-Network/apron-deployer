@@ -1,8 +1,6 @@
 {
     "listen_port": 4000,
     "ws_endpoint" : "ws://47.242.250.114:9944",
-    "gateway_api_endpoint" : "http://m1-bob.apron.network:8082",
-    "gateway_proxy_endpoint" : "http://47.242.250.114:8080",
-    "market_contract_address": "5CTBtLMvYacY29uPvNypRqL96uMAAifnrGysSDsLGThgcCa2",
-    "stats_contract_address": "5DwcMq4S9MB64NBUKFmCKH4Py1dyQ3ftoHjxGPr8oH7WAMUr"
+    "gateway_api_endpoint" : "http://m1-alice.apron.network:8082",
+    "gateway_proxy_endpoint" : "http://47.242.250.114:8080"
 }
