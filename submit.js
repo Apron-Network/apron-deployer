@@ -11,7 +11,7 @@ import fetch from 'node-fetch';
 const market = './target/services_market.contract';
 const stats = './target/services_statistics.contract';
 
-const config = JSON.parse(readFileSync('./config.json').toString())
+const config = JSON.parse(readFileSync('./config2.json').toString())
 const contracts = JSON.parse(readFileSync('./contracts.json').toString())
 const ws_endpoint = config.ws_endpoint;
 const gateway_endpoint = config.gateway_api_endpoint;

@@ -32,7 +32,7 @@ const stats = './target/services_statistics.contract';
 
 console.log("contract ws:", ws_endpoint);
 console.log("gateway addr:", gateway_endpoint);
-new Worker('./submit.js');
+new Worker("./submit.js");
 const app = express()
 app.use(express.json())
 

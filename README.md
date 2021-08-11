@@ -55,7 +55,7 @@ yarn run webserver
 
 ## register gateway service
 ```bash
-curl --location --request POST 'http://localhost:4000/service' \
+curl --location --request POST 'http://localhost:4001/service' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id" : "m1-alice_apron_network:8080",
@@ -83,15 +83,15 @@ yarn run webserver --config ./config2.js
 
 ## register gateway service
 ```bash
-curl --location --request POST 'http://localhost:4001/service' \
+curl --location --request POST 'http://localhost:4000/service' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id" : "m1-bob_apron_network:8080",
-    "domain_name": "m1-alice_apron_network",
+    "domain_name": "m1-bob_apron_network",
     "name": "Httpbin",
 	"desc": "httpbin service for testing purpose.",
 	"logo": "https://via.placeholder.com/150?text=httpbin",
-	"usage": "Just run the command `curl http://m1-alice.apron.network:8080`. More information please refer the official documents.",
+	"usage": "Just run the command `curl http://m1-bob.apron.network:8080`. More information please refer the official documents.",
     "providers": [
         {
             "id" : "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
