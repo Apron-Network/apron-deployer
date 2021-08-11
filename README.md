@@ -59,17 +59,19 @@ curl --location --request POST 'http://localhost:4000/service' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id" : "m1-alice_apron_network:8080",
-    "domain_name": "m1-alice_apron_network",
+    "domain_name": "m1-alice.apron.network",
+    "name": "Httpbin",
+	"desc": "httpbin service for testing purpose.",
+	"logo": "https://via.placeholder.com/150?text=httpbin",
+	"usage": "Just run the command `curl http://m1-alice.apron.network:8080`. More information please refer the official documents.",
     "providers": [
         {
-            "id" : "test_provider1",
-            "name": "test_provider1 http provider1",
-            "desc": "test http provider1 desc",
-            "base_url": "http://httpbin/anything",
-            "schema": "http",
-            "service_price_plan": "[{\"name\":\"Free\",\"type\":\"post-paid\",\"price\":0,\"unit\":\"APN\",\"desc\":\"to be continue\"}]"
+            "id" : "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+            "name": "Alice",
+            "desc": "Httpbin service for testing",
+            "base_url": "https://httpbin.org/anything",
+            "schema": "http"
         }
-
     ]
 }'
 ```
@@ -86,16 +88,18 @@ curl --location --request POST 'http://localhost:4001/service' \
 --data-raw '{
     "id" : "m1-bob_apron_network:8080",
     "domain_name": "m1-alice_apron_network",
+    "name": "Httpbin",
+	"desc": "httpbin service for testing purpose.",
+	"logo": "https://via.placeholder.com/150?text=httpbin",
+	"usage": "Just run the command `curl http://m1-alice.apron.network:8080`. More information please refer the official documents.",
     "providers": [
         {
-            "id" : "test_provider2",
-            "name": "test_provider2 http provider2",
-            "desc": "test http provider2 desc",
-            "base_url": "http://httpbin/anything",
-            "schema": "http",
-            "service_price_plan": "[{\"name\":\"Tier1\",\"type\":\"post-paid\",\"price\":0.1,\"unit\":\"APN\",\"desc\":\"to be continue\"}]"
+            "id" : "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+            "name": "Alice",
+            "desc": "Httpbin service for testing",
+            "base_url": "https://httpbin.org/anything",
+            "schema": "http"
         }
-
     ]
 }'
 ```
