@@ -18,7 +18,7 @@ program
 program.parse();
 
 const configPath = program.opts().config;
-console.log("load config from",  configPath);
+console.log("load config from", configPath);
 const config = JSON.parse(readFileSync(configPath).toString())
 const contracts = JSON.parse(readFileSync('./contracts.json').toString())
 const listen_port = config.listen_port;
@@ -32,9 +32,24 @@ const stats = './target/services_statistics.contract';
 
 console.log("contract ws:", ws_endpoint);
 console.log("gateway addr:", gateway_endpoint);
+
 new Worker("./submit.js");
-const app = express()
-app.use(express.json())
+const app = express();
+
+app.use(express.json());
+
+app.use(function (err, req, res, next) {
+    console.error(err.stack)
+    next(err)
+})
+
+app.use(function (err, req, res, next) {
+    if (req.xhr) {
+        res.status(500).send({ error: 'Something failed!' })
+    } else {
+        res.status(500).render('error', { error: err })
+    }
+})
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
@@ -49,12 +64,13 @@ app.post('/service', (req, res) => {
 })
 
 app.listen(listen_port, () => {
-    console.log(`Example app listening at http://localhost:${listen_port}`)
+    console.log(`Listening at http://localhost:${listen_port}`)
 })
 
 
 export async function registerServices(data) {
 
+    // Step 0: setup env
     await cryptoWaitReady(); // wait for crypto initializing
     const keyring = new Keyring({ type: 'sr25519' });
     let alicePair = keyring.createFromUri('//Alice');
@@ -79,12 +95,7 @@ export async function registerServices(data) {
 
     let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-    const endowment = 1230000000000n;
-    const gasLimit = 100000n * 10000000n;
-
-    const marketAbi = JSON.parse(readFileSync(market).toString());
-    const marketContract = new ContractPromise(api, marketAbi, market_contract_address);
-
+    // Step 1: process request data
     let v = data.providers[0];
 
     let sid = data.id;
@@ -110,7 +121,43 @@ export async function registerServices(data) {
     );
     let sdeclaimer = "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.";
 
+    // Step 2: register service with Apron Gateway
+    console.log("========= begin to register to gateway");
+    let gw_data = {
+        id: data.id,
+        domain_name: data.domain_name,
+        providers: [
+            {
+                id: v.id,
+                name: v.name,
+                desc: v.desc,
+                base_url: v.base_url,
+                schema: v.schema
+            }
+        ]
+    }
+
+    let response = await axios({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        url: gateway_endpoint + "/service",
+        data: gw_data
+    })
+    console.log("register result", response.status)
+
+    if(response.status != 200) { // failed, then return error
+        return response.status;
+    }
+
+    // Step 3: register service with smart contract
     console.log("========= begin to add service to service market");
+
+    const endowment = 1230000000000n;
+    const gasLimit = 100000n * 10000000n;
+
+    const marketAbi = JSON.parse(readFileSync(market).toString());
+    const marketContract = new ContractPromise(api, marketAbi, market_contract_address);
+
     let nonce = await api.rpc.system.accountNextIndex(alicePair.address);
     const unsubCall1 = await marketContract.tx
         .addService({ value: 0, gasLimit: gasLimit },
@@ -138,27 +185,4 @@ export async function registerServices(data) {
                 unsubCall1();
             }
         });
-
-    console.log("========= begin to register to gateway");
-    let gw_data = {
-        id: data.id,
-        domain_name: data.domain_name,
-        providers: [
-            {
-                id: v.id,
-                name: v.name,
-                desc: v.desc,
-                base_url: v.base_url,
-                schema: v.schema
-            }
-        ]
-    }
-
-    let response = await axios({
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        url: gateway_endpoint + "/service",
-        data: gw_data
-    })
-    console.log("register result", response.status)
 }
