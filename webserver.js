@@ -85,22 +85,46 @@ export async function registerServices(data) {
     const marketAbi = JSON.parse(readFileSync(market).toString());
     const marketContract = new ContractPromise(api, marketAbi, market_contract_address);
 
-    let v = data.providers[0]
+    let v = data.providers[0];
+
+    let sid = data.id;
+    let sname = data.name;
+    let sdesc = data.desc;
+    let slogo = data.logo;
+    let screate_time = Date.now();
+    let sprovider_name = v.name;
+    let sprovider_account = v.id; // fixme: need account;
+    let susage = data.usage;
+    let sschema = v.schema;
+    // let sprice_plan = data.price_plan;
+    // let sdeclaimer = data.declaimer; // fixme: need default ones;
+
+    let sprice_plan = JSON.stringify(
+        [{
+            name: "Free",
+            type: "post-paid",
+            price: 0,
+            unit: "APN",
+            desc: "Free plan for all."
+        }]
+    );
+    let sdeclaimer = "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.";
+
     console.log("========= begin to add service to service market");
     let nonce = await api.rpc.system.accountNextIndex(alicePair.address);
     const unsubCall1 = await marketContract.tx
         .addService({ value: 0, gasLimit: gasLimit },
-            data.id,
-            v.name,
-            v.desc,
-            v.logo,
-            v.create_time,
-            v.service_provider_name,
-            v.service_provider_account,
-            v.service_usage,
-            v.schema,
-            v.service_price_plan,
-            v.service_declaimer)
+            sid,
+            sname,
+            sdesc,
+            slogo,
+            screate_time,
+            sprovider_name,
+            sprovider_account,
+            susage,
+            sschema,
+            sprice_plan,
+            sdeclaimer)
         .signAndSend(alicePair, { nonce: nonce }, (result) => {
             if (result.status.isInBlock || result.status.isFinalized) {
                 if (!!result.dispatchError) {
@@ -116,11 +140,25 @@ export async function registerServices(data) {
         });
 
     console.log("========= begin to register to gateway");
+    let gw_data = {
+        id: data.id,
+        domain_name: data.domain_name,
+        providers: [
+            {
+                id: v.id,
+                name: v.name,
+                desc: v.desc,
+                base_url: v.base_url,
+                schema: v.schema
+            }
+        ]
+    }
+
     let response = await axios({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         url: gateway_endpoint + "/service",
-        data: data
+        data: gw_data
     })
     console.log("register result", response.status)
 }
