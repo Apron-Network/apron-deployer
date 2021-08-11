@@ -59,18 +59,23 @@ async function main() {
 
     // submit usage
     while (true) {
-        // endtime = Date.now();
+        try {
+            // get data from gateway.
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
 
-        // get data from gateway.
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-          };
-        let url = gateway_endpoint + '/service/report/';
-        let response = await fetch(url, requestOptions);
-        let reports = await response.json();
-        console.log("get data from gate way");
-        console.log(reports);
+            let url = gateway_endpoint + '/service/report/';
+            let response = await fetch(url, requestOptions);
+            let reports = await response.json();
+            console.log("get data from gate way");
+            console.log(reports);
+        } catch (error) {
+            console.error("Get report from gateway failed. retry in 30 seconds...");
+            await wait(30000); // 30s
+            continue;
+        }
 
         for (var index in reports) {
 
@@ -80,8 +85,8 @@ async function main() {
             // console.log("submit %s usage to chain", report.service_uuid);
 
             // remove service name empty.
-            if( report.service_uuid === "" ){
-                // console.log("continue");
+            if (report.service_uuid === "") {
+                console.warn("Empty service uuid");
                 continue;
             }
 
@@ -89,23 +94,24 @@ async function main() {
 
             const nonce = await api.rpc.system.accountNextIndex(alicePair.address);
             const unsub = await statsContract.tx
-            .submitUsage({ value: 0, gasLimit: -1 }, report.service_uuid, report.user_key, report.start_time, report.end_time, report.usage, report.price_plan, report.cost)
-            .signAndSend(alicePair, {nonce: nonce}, (result) => {
-                if (result.status.isInBlock || result.status.isFinalized) {
-                    // console.log("contract", contract);
-                    if (!!result.dispatchError) {
-                        console.log('submit usage failed for ', report.service_uuid, report.user_key);
-                        console.log('isBadOrigin is ', result.dispatchError.isBadOrigin);
-                        console.log('isOther is ', result.dispatchError.isOther);
-                        console.log('isModule is ', result.dispatchError.isModule);
-                    } else {
-                        console.log('submit usage success for ', report.service_uuid, report.user_key);
+                .submitUsage({ value: 0, gasLimit: -1 }, report.service_uuid, report.user_key, report.start_time, report.end_time, report.usage, report.price_plan, report.cost)
+                .signAndSend(alicePair, { nonce: nonce }, (result) => {
+                    if (result.status.isInBlock || result.status.isFinalized) {
+                        // console.log("contract", contract);
+                        if (!!result.dispatchError) {
+                            console.log('submit usage failed for ', report.service_uuid, report.user_key);
+                            console.log('isBadOrigin is ', result.dispatchError.isBadOrigin);
+                            console.log('isOther is ', result.dispatchError.isOther);
+                            console.log('isModule is ', result.dispatchError.isModule);
+                        } else {
+                            console.log('submit usage success for ', report.service_uuid, report.user_key);
+                        }
+                        unsub();
                     }
-                    unsub();
-                }
-            });
+                });
             await wait(2000); // 2s
         }
+
         await wait(30000); // 30s
     }
 
