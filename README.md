@@ -103,3 +103,6 @@ curl --location --request POST 'http://localhost:4000/service' \
     ]
 }'
 ```
+
+# query contract
+you can run query contract by exec `node contract_query.js`.

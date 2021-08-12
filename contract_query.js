@@ -19,14 +19,14 @@ const market_contract_address = contracts.market_contract_address;
 
 console.log("contract ws: ", ws_endpoint);
 async function main() {
-
     await cryptoWaitReady(); // wait for crypto initializing
 
     const keyring = new Keyring({ type: 'sr25519' });
+
     let alicePair = keyring.createFromUri('//Alice');
     let bobPair = keyring.createFromUri('//Bob');
-
     const provider = new WsProvider(ws_endpoint);
+
     const api = await ApiPromise.create({
         provider: provider,
         types: {
@@ -34,7 +34,6 @@ async function main() {
             "LookupSource": "MultiAddress"
         }
     });
-
     // Retrieve the chain & node information information via rpc calls
     const [chain, nodeName, nodeVersion] = await Promise.all([
         api.rpc.system.chain(),
@@ -43,13 +42,15 @@ async function main() {
     ]);
 
     console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
+
     let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-
     const endowment = 1230000000000n;
-    const gasLimit = 5000000000000n;
 
+    const gasLimit = 5000000000000n;
     const marketAbi = JSON.parse(readFileSync(market).toString());
     const marketContract = new ContractPromise(api, marketAbi, market_contract_address);
+    const statsAbi = JSON.parse(readFileSync(stats).toString());
+    const statsContract = new ContractPromise(api, statsAbi, stats_contract_address);
 
     // // read contract info
     // let unsub = await api.query.contracts.contractInfoOf(market_contract_address);
@@ -71,8 +72,6 @@ async function main() {
 
     {
         console.log("========= begin to query listAllStatistics");
-        const statsAbi = JSON.parse(readFileSync(stats).toString());
-        const statsContract = new ContractPromise(api, statsAbi, stats_contract_address);
         const { gasConsumed, result, output } = await statsContract.query.listAllStatistics(alicePair.address,
             { value: 0, gasLimit: gasLimit })
         // The actual result from RPC as `ContractExecResult`
@@ -83,6 +82,21 @@ async function main() {
             console.log('listAllStatistics Success', output.toHuman());
         } else {
             console.error('query stats Error', result.toHuman());
+        }
+    }
+
+    {
+        console.log("========= begin to query queryByIndex");
+        const { gasConsumed, result, output } = await statsContract.query.queryByIndex(alicePair.address,
+            { value: 0, gasLimit: gasLimit }, 0)
+        // The actual result from RPC as `ContractExecResult`
+        // console.log(result.toHuman());
+        // gas consumed
+        // console.log(gasConsumed.toHuman());
+        if (result.isOk) {
+            console.log('queryByIndex Success', output.toHuman());
+        } else {
+            console.error('query queryByIndex Error', result.toHuman());
         }
     }
     console.log("The End!!!");
