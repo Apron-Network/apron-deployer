@@ -114,7 +114,7 @@ async function main() {
             continue;
         }
 
-        await wait(30000); // 30s
+        await wait(5 * 60000); // 5 * 60s
     }
 
     console.log("The End!!!");
