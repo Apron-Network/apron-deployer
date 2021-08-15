@@ -70,33 +70,45 @@ async function main() {
         }
     }
 
-    {
-        console.log("========= begin to query listAllStatistics");
-        const { gasConsumed, result, output } = await statsContract.query.listAllStatistics(alicePair.address,
-            { value: 0, gasLimit: gasLimit })
-        // The actual result from RPC as `ContractExecResult`
-        // console.log(result.toHuman());
-        // gas consumed
-        // console.log(gasConsumed.toHuman());
-        if (result.isOk) {
-            console.log('listAllStatistics Success', output.toHuman());
-        } else {
-            console.error('query stats Error', result.toHuman());
-        }
-    }
+    // {
+    //     console.log("========= begin to query listAllStatistics");
+    //     const { gasConsumed, result, output } = await statsContract.query.listAllStatistics(alicePair.address,
+    //         { value: 0, gasLimit: gasLimit })
+    //     console.log(gasConsumed.toHuman());
+    //     if (result.isOk) {
+    //         console.log('listAllStatistics Success', output.toHuman());
+    //     } else {
+    //         console.error('query stats Error', result.toHuman());
+    //     }
+    // }
 
     {
-        console.log("========= begin to query queryByIndex");
-        const { gasConsumed, result, output } = await statsContract.query.queryByIndex(alicePair.address,
-            { value: 0, gasLimit: gasLimit }, 0)
-        // The actual result from RPC as `ContractExecResult`
-        // console.log(result.toHuman());
-        // gas consumed
-        // console.log(gasConsumed.toHuman());
+        console.log("========= begin to query listAllStatisticsByPage");
+        const { gasConsumed, result, output } = await statsContract.query.listAllStatisticsByPage(alicePair.address,
+            { value: 0, gasLimit: gasLimit }, {
+                "page_index": 0,
+                "page_size": 100,
+            })
+        console.log("gasConsumed", gasConsumed.toHuman());
         if (result.isOk) {
             console.log('queryByIndex Success', output.toHuman());
         } else {
             console.error('query queryByIndex Error', result.toHuman());
+        }
+    }
+
+    {
+        console.log("========= begin to query queryByServiceUuid");
+        const { gasConsumed, result, output } = await statsContract.query.queryByServiceUuid(alicePair.address,
+            { value: 0, gasLimit: gasLimit }, "100", {
+                "page_index": 0,
+                "page_size": 100,
+            })
+        console.log("gasConsumed", gasConsumed.toHuman());
+        if (result.isOk) {
+            console.log('queryByServiceUuid Success', output.toHuman());
+        } else {
+            console.error('queryByServiceUuid Error', result.toHuman());
         }
     }
     console.log("The End!!!");
