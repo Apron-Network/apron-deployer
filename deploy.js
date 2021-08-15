@@ -73,6 +73,7 @@ async function main() {
         const unsub1 = await code.tx
             .new(endowment, gasLimit, alicePair.address)
             .signAndSend(alicePair, { nonce: nonce }, (result) => {
+                console.log("result:", result.toHuman());
                 if (result.status.isInBlock || result.status.isFinalized) {
                     // here we have an additional field in the result, containing the contract
                     marketContract = result.contract;
@@ -96,6 +97,7 @@ async function main() {
         const unsub2 = await code.tx
             .new(endowment, gasLimit, alicePair.address, marketContract.address.toString())
             .signAndSend(alicePair, { nonce: nonce }, (result) => {
+                console.log("result:", result.toHuman());
                 if (result.status.isInBlock || result.status.isFinalized) {
 
                     if (!!result.dispatchError) {
