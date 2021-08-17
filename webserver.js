@@ -175,7 +175,7 @@ export async function registerServices(data) {
         .signAndSend(alicePair, { nonce: nonce }, (result) => {
             if (result.status.isInBlock || result.status.isFinalized) {
                 if (!!result.dispatchError) {
-                    console.log('add service failed for ', report.service_uuid, report.user_key);
+                    console.log('add service failed for ', sid, sprovider_account);
                     console.log('isBadOrigin is ', result.dispatchError.isBadOrigin);
                     console.log('isOther is ', result.dispatchError.isOther);
                     console.log('isModule is ', result.dispatchError.isModule);
