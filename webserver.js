@@ -137,17 +137,17 @@ export async function registerServices(data) {
         ]
     }
 
-    // let response = await axios({
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     url: gateway_endpoint + "/service",
-    //     data: gw_data
-    // })
-    // console.log("register result", response.status)
-    //
-    // if(response.status != 200) { // failed, then return error
-    //     return response.status;
-    // }
+    let response = await axios({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        url: gateway_endpoint + "/service",
+        data: gw_data
+    })
+    console.log("register result", response.status)
+
+    if(response.status != 200) { // failed, then return error
+        return response.status;
+    }
 
     // Step 3: register service with smart contract
     console.log("========= begin to add service to service market");
