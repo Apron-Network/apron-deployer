@@ -135,13 +135,15 @@ async function main() {
             }
         });
     await wait(10000); // 10s
-    const { gasConsumed2, result2, output2 } = await statsContract.query.listAllStatistics(alicePair.address,
-        { value: 0, gasLimit: gasLimit })
-    console.log(gasConsumed2, result2, output2)
-    if (result2.isOk) {
-        console.log('query stats Success', output2.toHuman());
-    } else {
-        console.error('query stats Error', result2.asErr);
+    {
+        const { gasConsumed, result, output } = await statsContract.query.listAllStatistics(alicePair.address,
+            { value: 0, gasLimit: gasLimit })
+        console.log(gasConsumed, result, output)
+        if (result.isOk) {
+            console.log('query stats Success', output.toHuman());
+        } else {
+            console.error('query stats Error', result.asErr);
+        }
     }
     console.log("The End!!!");
 }
