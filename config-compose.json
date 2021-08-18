@@ -1,6 +1,6 @@
 {
     "listen_port": 4000,
     "ws_endpoint" : "ws://apron-node:9944",
-    "gateway_api_endpoint" : "http://apron-gateway:8082",
-    "gateway_proxy_endpoint" : "http://apron-gateway:8080"
+    "gateway_api_endpoint" : "http://apron-gateway-alice:8082",
+    "gateway_proxy_endpoint" : "http://apron-gateway-alice:8080"
 }
